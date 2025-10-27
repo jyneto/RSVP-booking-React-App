@@ -14,8 +14,5 @@ För att säkerställa att data som skickas till API:et är korrekt validerar oc
 Felhantering och användarfeedback
 Under API-anrop visas loading‑indikatorer och knappar inaktiveras för att förhindra dubbelklick. Vid serverfel visas användarvänliga felmeddelanden och för vissa kända fall (t.ex. duplicate email) visas en informativ text eller användaren dirigeras till bekräftelse med ett tydligt meddelande. Om API:et är långsamt ger appen tydlig feedback (spinner, timeout-meddelande) och ger möjlighet att försöka igen.
 
-Vidareutveckling
-För framtida funktioner (t.ex. administratörspanel, betalning, flera event) är koden redan strukturerad för expansion: fler komponenter kan läggas till och Context kan migreras till ett mer robust state‑hanteringsbibliotek om nödvändigt. Jag skulle också lägga till fler automatiska tester (unit + integration) runt kritiska flöden (t.ex. bordsval och kapacitetskontroll) för att öka tillförlitligheten.
-
 Sammanfattning
 Projektet är designat för att vara enkelt att förstå och vidareutveckla. Genom att hålla state lokal för bokningsflödet, normalisera input och skicka relevanta availability‑requests till servern säkerställer jag att bokningar blir korrekta och robusta. Med ett par förbättringar (mer komplett felhantering, mobilpolish och bygg/deploy‑skript) når applikationen både funktionskraven och en bra användarupplevelse.
