@@ -1,75 +1,66 @@
-# React + TypeScript + Vite
+# RSVP Booking React App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains a small single‑page React application (TypeScript + Vite) that implements a step‑based RSVP/booking flow for a wedding or small event.
 
-Currently, two official plugins are available:
+Main purpose
+- Let guests enter contact details and attendance.
+- If attending: choose an available table for the event (server validates availability and capacity).
+- Submit a booking/RSPV to the backend and show a clear confirmation.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Key features
+- Step-based UX with progress indicator
+- Separate components: SelectDate (optional), SelectTable, ContactDetails, Confirmation
+- Context API for booking state
+- API integration (fetch available tables, submit RSVP)
+- Client-side validation, loading states and friendly error messages
 
-## React Compiler
+Quick start (development)
+1. Install dependencies:
+```cmd
+npm install
+```
+2. (Optional) If you use local HTTPS for the dev server (recommended when embedding in an HTTPS MVC page), generate mkcert certs and place `localhost.pem` and `localhost-key.pem` in project root. See notes below.
+3. Start dev server:
+```cmd
+npm run dev
+```
+The app will run on https://localhost:5173/ (or http depending on config).
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Build for production
+```cmd
+npm run build
+```
+The production output will be in `dist/`. To serve this from your ASP.NET MVC app, copy the `dist` contents into the MVC project's `wwwroot/rsvp/` folder and link to `/rsvp/index.html`.
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Environment
+- Configure the API base URL and MVC URL in `.env.local` (this file is ignored by Git):
+```
+VITE_API_BASE_URL=https://localhost:7008/api
+VITE_MVC_URL=http://localhost:5039
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+HTTPS dev server (mkcert)
+- To load the React dev server inside an HTTPS MVC page you should run Vite with a trusted local certificate. You can create certs with `mkcert` and put `localhost.pem` + `localhost-key.pem` in the project root. Vite is configured to pick them up if present.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Security / Git
+- `.gitignore` excludes `*.pem` and `.env*` — keep secrets out of the repo. If you accidentally commit secrets, remove them from the index and rotate keys.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Project layout (important files)
+- `src/components/` — UI components (ContactDetails, SelectTable, Confirmation, ProgressBar, SelectDate)
+- `src/context/BookingCtx.tsx` — shared booking state
+- `src/api/guest.ts` — API helpers for fetching tables and submitting RSVP
+- `vite.config.ts` — Vite config (supports optional local HTTPS)
+- `REFLECTION.md` — VG-level reflection about the implementation
+
+Notes & next steps
+- If your backend enforces a fixed event date/time (common for weddings), the UI defaults to those values and skips date selection. You can re-enable `SelectDate` if your event supports multiple dates/times.
+- For production deployment I recommend adding a small script to copy `dist` into the MVC `wwwroot` and updating the MVC view to link to `/rsvp/index.html`.
+
+Questions or help
+- If you want I can:
+  - add a build→deploy script that copies `dist` into your MVC project,
+  - help push this repo to GitHub (commands prepared), or
+  - implement the availability POST payload so the frontend asks the backend for available tables using the event start time and party size.
+
+---
+Created as part of a course assignment — implement and test the booking flow, handle errors and provide the VG reflection in `REFLECTION.md`.
