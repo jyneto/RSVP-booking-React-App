@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAvailableTables, submitRSVP } from "../api/guest";
+import { getAvailableTables as getAvailFromBookings, createBooking } from "../api/booking";
+import { submitRSVP } from "../api/guest";
+import{ toUtcIso } from "../utils/time";
 import { useBooking } from "../context/BookingCtx";
 
 export default function SelectTable() {
@@ -11,10 +13,25 @@ export default function SelectTable() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getAvailableTables()
-     .then(data => { if (mounted) setTables(data); })
-      .catch(err => { if (mounted) setError(String(err?.message || err)); })
-      .finally(() => { if (mounted) setLoading(false); });
+    const startTimeUtc = toUtcIso(state.date, state.time);
+    getAvailFromBookings(startTimeUtc, state.partySize)
+      .then(rows => { 
+        if (!mounted) return;
+        setTables(rows.map( r => ({
+          id: r.tableId,
+          tableNumber: r.tableNumber,
+          capacity: r.capacity,
+          availableSeats: r.capacity, // Enkel logik för tillgängliga platser
+        })));
+      })
+      .catch(err => {
+        if (!mounted) return;
+        setError(String(err?.message || err));
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setLoading(false);
+      });
     return () => { mounted = false; };
   }, [setTables, state.date, state.time, state.partySize]);
     return (
@@ -49,6 +66,8 @@ export default function SelectTable() {
                     setSubmitting(true);
                     setError(null);
                     try {
+                      //Create Guest RSVP
+                      const {id: guestId} =
                       await submitRSVP({
                         fullName: state.fullName,
                         email: state.email,
@@ -57,13 +76,21 @@ export default function SelectTable() {
                         isAttending: state.isAttending == true,
                         tableId: state.tableId!,
                       });
+
+                      const startTimeUtcISO = toUtcIso(state.date, state.time);
+                      await createBooking({
+                        tableId: state.tableId!,
+                        guestId,
+                        startTimeUtcISO,
+                        partySize: state.partySize,
+                      });
                       setState(s => ({ ...s, step: 4 }));
                     } catch (err: any) {
                       const msg =
                         err?.response?.data?.message ||
                         err?.response?.data?.title ||
                         err?.message ||
-                        "Kunde inte skicka RSVP";
+                        "Could not complete RSVP";
                       setError(String(msg));
                     } finally {
                       setSubmitting(false);
