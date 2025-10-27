@@ -1,0 +1,24 @@
+# Auto normalize line endings for text files
+# This ensures consistent line endings in the repository and avoids LF/CRLF warnings
+* text=auto
+
+# Force common text files to use LF in the repository (recommended for cross-platform projects)
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# Binary files (do not attempt to normalize)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
