@@ -1,191 +1,110 @@
-Wedding RSVP Booking App
+# Wedding RSVP Booking App
 
-A step-based React booking system integrated with an ASP.NET Core REST API
+A step-based React booking (RSVP) system backed by an ASP.NET Core REST API.  
+Originally built as a restaurant booking sample for a course assignment, the project was adapted into a wedding RSVP system while preserving the required booking functionality and improving validation, UX, and admin tooling.
 
-Overview
+---
 
-This project began as a restaurant booking application following the course assignment instructions.
-During development, it evolved into a Wedding RSVP system, but the core functionality of the booking flow remains fully intact:
+## Quick overview
 
-Selecting date, time, and party size
+Frontend
+- React + Vite (TypeScript)
+- Step-based booking flow (select date/time → contact details → choose table → confirmation)
+- Context API for state, responsive UI, clear loading and error states
 
-Fetching available tables based on those choices
+Backend
+- ASP.NET Core Web API (.NET 9)
+- Repository + Service pattern, EF Core for persistence
+- DTO-based API contracts and server-side validation
+- Anonymous RSVP endpoint for guests and admin-protected endpoints for management
 
-Providing contact details
+Admin
+- ASP.NET Core MVC admin dashboard
+- CRUD for Guests, Tables, Bookings and dashboard counters
+- Admin UI calls the API using HttpClient with Bearer token
 
-Submitting a reservation to the backend API
+---
 
-Displaying a confirmation page
+## What the app does (user flow)
 
-Alongside the React SPA, an MVC Admin Dashboard is included, allowing administrators to manage:
+1. Select date/time and party size (only the wedding date is allowed: `2026-08-23`)
+2. Fetch available tables (`POST /api/bookings/available`) — server computes overlap, used seats and remaining capacity
+3. Enter contact details and attending status
+   - If attending → choose a table (table selection enforces capacity)
+   - If not attending → RSVP is saved without a table/booking
+4. Submit reservation → backend creates guest/booking as appropriate
+5. Confirmation page with reservation details
 
-Guests
+All API errors and validation messages are surfaced in the UI.
 
-Tables
+---
 
-Bookings
+## Key endpoints (examples)
+- `POST /api/guest` — public RSVP (GuestCreateDTO)
+- `POST /api/bookings` — create booking (BookingCreateDTO)
+- `POST /api/bookings/available` — check table availability for a slot (AvailabilityRequestDTO)
+- `GET /api/bookings`, `GET /api/bookings/{id}` — bookings read
+- `api/admin/*` — admin only CRUD endpoints for guests, tables, bookings
+- `POST /api/auth/login` — obtain JWT token for admin area
 
-Dashboard counters (total guests, bookings, free tables, menu items)
+Refer to controllers for exact DTOs and response shapes.
 
-This README explains the system, how it fulfills the assignment requirements, and how to run everything locally.
+---
 
-Tech Stack
-Frontend — React (TypeScript)
+## Why this still satisfies the assignment
 
-React + Vite
+The original assignment required:
+- A step-based booking flow — implemented in the React SPA with progress indicators.
+- Requesting available tables and respecting capacity — server computes overlapping bookings and used seats to return valid tables.
+- Contact/booking submission — SPA sends DTOs to API; backend validates and persists.
+- Modern responsive UI and error handling — implemented with loading states, validation messages and mobile-friendly layout.
 
-Context API for global state
+Transition rationale:
+- The restaurant booking requirements map directly to a wedding RSVP system: both need date/time control, seat capacity, booking overlap prevention and contact data.
+- Allows users to choose 1 or 2 guests attending. 
+- The app restricts possible dates to the wedding date (business rule) but still demonstrates date/time validation.
+- RSVP-only guests (not attending) are saved without a booking, still meeting the "submit reservation" requirement.
 
-Step-based booking flow
+In short: original functional goals remain implemented and validated; domain semantics changed to fit a wedding use case without removing assignment requirements.
 
-API integration (Axios-style HTTP wrapper)
+---
 
-Modern, responsive UI with custom CSS
+## Notable implementation details
 
-Clear error messages and loading states
+- Booking overlap rule: `existing.Start < newEnd && newStart < existing.End`
+- Time handling: times normalized to UTC server-side
+- Seat accounting: `UsedSeatsAsync` sums `PartySize` over overlapping bookings
+- Table assignment for guests:
+  - `GuestCreateDTO` enforces `TableId` when `IsAttending == true`
+  - Service layer validates table existence and current guest count vs capacity before persisting
+- Admin dashboard uses the same API and requires JWT role `Admin`
 
-Backend — ASP.NET Core 8 Web API
+---
 
-REST endpoints for guests, tables, bookings
+## Run locally
 
-Validation (capacity, overlapping bookings, date rules)
+1. Restore packages:
+   - `dotnet restore`
+2. Update DB (apply EF migrations):
+   - __dotnet ef database update__
+3. Run backend:
+   - `dotnet run` or in Visual Studio use __Debug > Start Debugging__
+4. Run frontend:
+   - `npm install` (or `pnpm`/`yarn`)
+   - `npm run dev` (Vite)
 
-Repository + Service pattern
+Open the SPA in the browser for the guest flow; navigate to the admin MVC area and authenticate to manage data.
 
-EF Core + SQL Server
+---
 
-DTO-based API communication
+## Evolution: Restaurant app → Wedding RSVP
 
-Anonymous RSVP endpoint for wedding guests
-
-Admin Panel — ASP.NET Core MVC
-
-Admin-protected area
-
-CRUD pages for bookings, guests, tables
-
-Dashboard with statistics
-
-Connected to REST API via HttpClient with Bearer token
-
-Assignment Requirements & How This Project Meets Them
-Step-Based Booking Flow (React)
-
-The app guides the user through:
-
-Select Date & Time
-
-Enter Contact Details
-
-Choose a Table (if attending)
-
-See Confirmation
-
-A progress bar visually shows each step.
-
-Enter Date, Time, Party Size
-
-Handled in SelectDate.tsx:
-
-Fully clickable custom inputs
-
-Only the wedding date (2026-08-23) is allowed
-
-Party size is chosen on the table-selection step (still fulfills requirement)
-
-Fetching Available Tables
-
-React calls:
-
-POST /api/bookings/available
-
-
-The backend calculates:
-
-overlapping bookings
-
-used seats
-
-remaining capacity
-
-tables that can fit the selected party size
-
-Results are displayed in SelectTable.tsx.
-
-Submit a Booking with Contact Details
-
-In ContactDetails.tsx, the user provides:
-
-Full name
-
-Email
-
-Phone
-
-Allergies
-
-Attending (Yes/No)
-
-If attending → continues to table selection
-If not attending → RSVP is saved without booking (but still fulfills “submit reservation”).
-
-API Integration with Error Handling
-
-All API calls show:
-
-Loading states
-
-Red error messages
-
-Validation messages from API (party size, capacity, wrong date, duplicates)
-
-Modern UI/UX + Responsive Design
-
-Wedding-themed styling
-
-Clickable fields with icons
-
-Mobile-friendly layouts
-
-Clear step indicators
-
-Feedback on selection (highlighted table, red warnings, etc.)
-
-Evolution of the Project
-
-Although the assignment was originally for a restaurant booking system, the project was adapted into a wedding RSVP application.
-
-What Changed
-Restaurant App	Wedding RSVP App
-Multiple possible dates	Only the wedding date allowed
-Restaurant guests	Wedding guests
-Generic booking form	RSVP with attending/decline
-Party size on first page	Moved to table-selection step
-Restaurant branding	Wedding invitation theme
-What Stayed the Same (Assignment Requirements)
-
-✔ Step-based SPA
-✔ Fetch available tables
-✔ Contact details submission
-✔ Booking stored in backend
-✔ Modern responsive UI
-✔ Error handling + validation
-✔ REST API integration
-
-Additional Features (Bonus)
-
-MVC Admin Dashboard
-
-Guest + Table + Booking CRUD
-
-Real-time calculated available seats
-
-Strict time/date validation
-
-Repository + service pattern in API
-
-Well-structured architecture
-
-Better UX design than bare minimum
-
-This makes the system more realistic, polished, and professional while fulfilling (and exceeding) course expectations.
+| Area | Restaurant app | Wedding RSVP app |
+|------|----------------|------------------|
+| Dates allowed | Multiple possible dates | Only wedding date (`2026-08-23`) |
+| User intent | Restaurant reservation | Wedding RSVP (attend/decline) |
+| Table choice | Always part of booking | Required only if attending |
+| Booking form | Generic | RSVP + attending flag |
+| UI tone | Restaurant branding | Wedding invitation theme |
+
+What stayed: step-based SPA, fetching available tables, server-side validation, persistence, responsive UI, and clear error handling.
