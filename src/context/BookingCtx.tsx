@@ -37,8 +37,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     time: "18:00",
     partySize: 2,
     /* steg */
-    // start at step 2 (contact details) because date/time are fixed for the event
-    step: 2
+    step: 1
     });
     
     const [tables, setTables] = useState<Table[]>([]);
