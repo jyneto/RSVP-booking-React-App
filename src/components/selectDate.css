@@ -1,0 +1,106 @@
+/* Basic styles for SelectDate component
+.wedding-card {
+  max-width: 720px;
+  margin: 20px auto;
+  padding: 18px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.wedding-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.wedding-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.field-label { display: block; }
+.field-title { display: block; margin-bottom: 6px; font-size: 0.9rem; }
+
+.clickable-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f7f7f7;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.real-input {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  outline: none;
+}
+
+.input-icon { margin-left: auto; }
+
+.wedding-btn {
+  background: #7a8450;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.wedding-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 520px) {
+  .wedding-grid { grid-template-columns: 1fr; }
+} */
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.clickable-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid #7a8450;
+  background-color: #fff;
+  cursor: pointer;
+  min-height: 46px;
+}
+
+.clickable-input:hover {
+  background-color: #f8f5ec;
+}
+
+.input-text {
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.input-icon {
+  font-size: 1.4rem;
+  pointer-events: none;
+}
+
+/* The real input: invisible but present */
+.real-input {
+  position: absolute;
+  inset: 0;          
+  opacity: 0;
+  border: none;
+  background: transparent;
+}
