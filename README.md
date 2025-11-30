@@ -1,66 +1,191 @@
-# RSVP Booking React App
+Wedding RSVP Booking App
 
-This repository contains a small single‑page React application (TypeScript + Vite) that implements a step‑based RSVP/booking flow for a wedding or small event.
+A step-based React booking system integrated with an ASP.NET Core REST API
 
-Main purpose
-- Let guests enter contact details and attendance.
-- If attending: choose an available table for the event (server validates availability and capacity).
-- Submit a booking/RSPV to the backend and show a clear confirmation.
+Overview
 
-Key features
-- Step-based UX with progress indicator
-- Separate components: SelectDate (optional), SelectTable, ContactDetails, Confirmation
-- Context API for booking state
-- API integration (fetch available tables, submit RSVP)
-- Client-side validation, loading states and friendly error messages
+This project began as a restaurant booking application following the course assignment instructions.
+During development, it evolved into a Wedding RSVP system, but the core functionality of the booking flow remains fully intact:
 
-Quick start (development)
-1. Install dependencies:
-```cmd
-npm install
-```
-2. (Optional) If you use local HTTPS for the dev server (recommended when embedding in an HTTPS MVC page), generate mkcert certs and place `localhost.pem` and `localhost-key.pem` in project root. See notes below.
-3. Start dev server:
-```cmd
-npm run dev
-```
-The app will run on https://localhost:5173/ (or http depending on config).
+Selecting date, time, and party size
 
-Build for production
-```cmd
-npm run build
-```
-The production output will be in `dist/`. To serve this from your ASP.NET MVC app, copy the `dist` contents into the MVC project's `wwwroot/rsvp/` folder and link to `/rsvp/index.html`.
+Fetching available tables based on those choices
 
-Environment
-- Configure the API base URL and MVC URL in `.env.local` (this file is ignored by Git):
-```
-VITE_API_BASE_URL=https://localhost:7008/api
-VITE_MVC_URL=http://localhost:5039
-```
+Providing contact details
 
-HTTPS dev server (mkcert)
-- To load the React dev server inside an HTTPS MVC page you should run Vite with a trusted local certificate. You can create certs with `mkcert` and put `localhost.pem` + `localhost-key.pem` in the project root. Vite is configured to pick them up if present.
+Submitting a reservation to the backend API
 
-Security / Git
-- `.gitignore` excludes `*.pem` and `.env*` — keep secrets out of the repo. If you accidentally commit secrets, remove them from the index and rotate keys.
+Displaying a confirmation page
 
-Project layout (important files)
-- `src/components/` — UI components (ContactDetails, SelectTable, Confirmation, ProgressBar, SelectDate)
-- `src/context/BookingCtx.tsx` — shared booking state
-- `src/api/guest.ts` — API helpers for fetching tables and submitting RSVP
-- `vite.config.ts` — Vite config (supports optional local HTTPS)
-- `REFLECTION.md` — VG-level reflection about the implementation
+Alongside the React SPA, an MVC Admin Dashboard is included, allowing administrators to manage:
 
-Notes & next steps
-- If your backend enforces a fixed event date/time (common for weddings), the UI defaults to those values and skips date selection. You can re-enable `SelectDate` if your event supports multiple dates/times.
-- For production deployment I recommend adding a small script to copy `dist` into the MVC `wwwroot` and updating the MVC view to link to `/rsvp/index.html`.
+Guests
 
-Questions or help
-- If you want I can:
-  - add a build→deploy script that copies `dist` into your MVC project,
-  - help push this repo to GitHub (commands prepared), or
-  - implement the availability POST payload so the frontend asks the backend for available tables using the event start time and party size.
+Tables
 
----
-Created as part of a course assignment — implement and test the booking flow, handle errors and provide the VG reflection in `REFLECTION.md`.
+Bookings
+
+Dashboard counters (total guests, bookings, free tables, menu items)
+
+This README explains the system, how it fulfills the assignment requirements, and how to run everything locally.
+
+Tech Stack
+Frontend — React (TypeScript)
+
+React + Vite
+
+Context API for global state
+
+Step-based booking flow
+
+API integration (Axios-style HTTP wrapper)
+
+Modern, responsive UI with custom CSS
+
+Clear error messages and loading states
+
+Backend — ASP.NET Core 8 Web API
+
+REST endpoints for guests, tables, bookings
+
+Validation (capacity, overlapping bookings, date rules)
+
+Repository + Service pattern
+
+EF Core + SQL Server
+
+DTO-based API communication
+
+Anonymous RSVP endpoint for wedding guests
+
+Admin Panel — ASP.NET Core MVC
+
+Admin-protected area
+
+CRUD pages for bookings, guests, tables
+
+Dashboard with statistics
+
+Connected to REST API via HttpClient with Bearer token
+
+Assignment Requirements & How This Project Meets Them
+Step-Based Booking Flow (React)
+
+The app guides the user through:
+
+Select Date & Time
+
+Enter Contact Details
+
+Choose a Table (if attending)
+
+See Confirmation
+
+A progress bar visually shows each step.
+
+Enter Date, Time, Party Size
+
+Handled in SelectDate.tsx:
+
+Fully clickable custom inputs
+
+Only the wedding date (2026-08-23) is allowed
+
+Party size is chosen on the table-selection step (still fulfills requirement)
+
+Fetching Available Tables
+
+React calls:
+
+POST /api/bookings/available
+
+
+The backend calculates:
+
+overlapping bookings
+
+used seats
+
+remaining capacity
+
+tables that can fit the selected party size
+
+Results are displayed in SelectTable.tsx.
+
+Submit a Booking with Contact Details
+
+In ContactDetails.tsx, the user provides:
+
+Full name
+
+Email
+
+Phone
+
+Allergies
+
+Attending (Yes/No)
+
+If attending → continues to table selection
+If not attending → RSVP is saved without booking (but still fulfills “submit reservation”).
+
+API Integration with Error Handling
+
+All API calls show:
+
+Loading states
+
+Red error messages
+
+Validation messages from API (party size, capacity, wrong date, duplicates)
+
+Modern UI/UX + Responsive Design
+
+Wedding-themed styling
+
+Clickable fields with icons
+
+Mobile-friendly layouts
+
+Clear step indicators
+
+Feedback on selection (highlighted table, red warnings, etc.)
+
+Evolution of the Project
+
+Although the assignment was originally for a restaurant booking system, the project was adapted into a wedding RSVP application.
+
+What Changed
+Restaurant App	Wedding RSVP App
+Multiple possible dates	Only the wedding date allowed
+Restaurant guests	Wedding guests
+Generic booking form	RSVP with attending/decline
+Party size on first page	Moved to table-selection step
+Restaurant branding	Wedding invitation theme
+What Stayed the Same (Assignment Requirements)
+
+✔ Step-based SPA
+✔ Fetch available tables
+✔ Contact details submission
+✔ Booking stored in backend
+✔ Modern responsive UI
+✔ Error handling + validation
+✔ REST API integration
+
+Additional Features (Bonus)
+
+MVC Admin Dashboard
+
+Guest + Table + Booking CRUD
+
+Real-time calculated available seats
+
+Strict time/date validation
+
+Repository + service pattern in API
+
+Well-structured architecture
+
+Better UX design than bare minimum
+
+This makes the system more realistic, polished, and professional while fulfilling (and exceeding) course expectations.
