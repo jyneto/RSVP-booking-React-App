@@ -24,7 +24,7 @@ export default function App() {
       }}>
 
       </div>
-           <h1 style={{fontSize:'1.5rem',margin:'18px 0 8px 0',fontWeight:700,color:'#7a8450',letterSpacing:'1px',textAlign:'center'}}>Boka Table / RSVP</h1>
+           <h1 style={{fontSize:'1.5rem',margin:'18px 0 8px 0',fontWeight:700,color:'#7a8450',letterSpacing:'1px',textAlign:'center'}}>RSVP</h1>
                 
                 <ProgressBar />
                     
@@ -36,7 +36,7 @@ export default function App() {
         </div>
           
             <footer style={{marginTop: 24, textAlign:'center'}}>
-                <a href={import.meta.env.VITE_MVC_URL} className="wedding-btn" rel="noreferrer" target="_blank">Homepage</a>
+                <a href={import.meta.env.VITE_MVC_URL} className="wedding-btn" rel="noreferrer" >Homepage</a>
             </footer>
         </div>
           
