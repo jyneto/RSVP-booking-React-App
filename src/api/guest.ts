@@ -15,10 +15,10 @@ export type GuestCreateDTO = {
     isAttending: boolean;
     tableId?: number | null; // makes it optional
 };
-export async function getAvailableTables(): Promise<Table[]> {
-    const response = await api.get("/guest/available-tables");
-    return response.data;
-}
+// export async function getAvailableTables(): Promise<Table[]> {
+//     const response = await api.get("/guest/available-tables");
+//     return response.data;
+// }
 
 export async function submitRSVP(payload: GuestCreateDTO): Promise<{id: number}> {
     const response = await api.post("/guest", payload);
