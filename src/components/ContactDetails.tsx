@@ -18,13 +18,13 @@ export default function ContactDetails() {
         if (state.isAttending === null) return setError("Please choose attendance option");
         try {
             if (state.isAttending === true) {
-                // Gå till SelectTable för bordsval
+                // Go to SelectTable for table selection
                 setState(prev => ({ ...prev, step: 3 }));
             } else {
-                // Registrera RSVP direkt och visa bekräftelse
-               await submitRSVP({
+                // Register RSVP directly and show confirmation
+                await submitRSVP({
                     fullName: state.fullName,
-                    email: state.email ,
+                    email: state.email,
                     phone: state.phone || null,
                     allergies: state.allergies || null,
                     isAttending: false,
@@ -53,9 +53,9 @@ export default function ContactDetails() {
     return (
         <div className="wedding-card">
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                <div className="wedding-title">Contact Details</div>
-                <div style={{textAlign:'center', marginBottom:8}}>
-                    <small style={{color:'#556B2F'}}>Event date: <strong>{state.date}</strong> • Time: <strong>{state.time}</strong></small>
+                <div className="wedding-title">Fill in our contact details</div>
+                <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                    <small style={{ color: '#556B2F' }}>Event date: <strong>{state.date}</strong> • Time: <strong>{state.time}</strong></small>
                     <div><small>Party size: <strong>{state.partySize}</strong></small></div>
                 </div>
                 {error && <p style={{ color: "crimson", textAlign: "center" }}>{error}</p>}
@@ -63,7 +63,7 @@ export default function ContactDetails() {
                     <label>Full Name*
                         <input
                             // value={state.fullName}  
-                            value={state.fullName ?? ""} 
+                            value={state.fullName ?? ""}
                             onChange={(e) => setState({ ...state, fullName: e.target.value })}
                             required
                         />
@@ -93,9 +93,11 @@ export default function ContactDetails() {
                             onChange={(e) => setState({ ...state, allergies: e.target.value })}
                         />
                     </label>
+
+
                     <div>
                         <span>Are you attending?</span>
-                        <div style={{display: "flex", gap:12, marginTop:6}}>
+                        <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
                             <label>
                                 <input
                                     type="radio"
@@ -108,8 +110,7 @@ export default function ContactDetails() {
                                 Yes
                             </label>
                             <label>
-                                <input 
-                                   
+                                <input
                                     type="radio"
                                     name="isAttending"
                                     className="radio-btn"
@@ -119,10 +120,40 @@ export default function ContactDetails() {
                                 No
                             </label>
                         </div>
+
+                        {state.isAttending === true && (
+                            <div style={{ marginTop: 10 }}>
+                                <span>How many will attend?</span>
+                                <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="partySize"
+                                            className="radio-btn"
+                                            checked={state.partySize === 1}
+                                            onChange={() => setState({ ...state, partySize: 1 })}
+                                        />
+                                        Just me (1)
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="partySize"
+                                            className="radio-btn"
+                                            checked={state.partySize === 2}
+                                            onChange={() => setState({ ...state, partySize: 2 })}
+                                        />
+                                        Me + one (2)
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div style={{marginTop:18, display:"flex", gap:12, justifyContent:'center'}}>
-                    
+
+                <div style={{ marginTop: 18, display: "flex", gap: 12, justifyContent: 'center' }}>
+                    <button type="button" className="wedding-btn" onClick={() => setState(s => ({ ...s, step: 1 }))}>Back to Date Selection</button>
+
                     <button type="submit" className="wedding-btn" disabled={loading || state.isAttending === null}>
                         {loading ? "Submitting..." : "Submit RSVP"}
                     </button>
