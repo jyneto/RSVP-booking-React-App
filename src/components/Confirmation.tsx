@@ -26,8 +26,6 @@ export default function Confirmation() {
                 </>
             )}
             
-         <a href={import.meta.env.VITE_MVC_URL} className="wedding-btn" rel="noreferrer" >Homepage</a>
-
         </div>
     );
 }
